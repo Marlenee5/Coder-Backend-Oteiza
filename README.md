@@ -11,4 +11,4 @@ La persistencia de datos se realiza mediante archivos JSON (`products.json` y `c
 1. Clonar el repositorio:
 
 ```bash
-git clone <URL_DEL_REPOSITORIO>
+git clone https://github.com/Marlenee5/Coder-Backend-Oteiza
