@@ -1,0 +1,8 @@
+# Node modules
+node_modules/
+
+# Archivos locales de prueba
+server-usuarios.js
+
+# Archivos de log
+*.log
