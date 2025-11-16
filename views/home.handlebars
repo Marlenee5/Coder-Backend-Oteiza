@@ -1,0 +1,11 @@
+<h1>Lista de productos (estática)</h1>
+
+<ul>
+    {{#each products}}
+        <li>
+            <strong>{{title}}</strong> - ${{price}}
+        </li>
+    {{/each}}
+</ul>
+
+<a href="/realtimeproducts">Ir a productos en tiempo real</a>

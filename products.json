@@ -1,1 +1,35 @@
-[]
+[
+  {
+    "id": 1,
+    "title": "Nombre nuevo",
+    "description": "Algo",
+    "code": "A5789",
+    "price": 9999,
+    "status": true,
+    "stock": 15,
+    "category": "prueba",
+    "thumbnails": []
+  },
+  {
+    "id": 2,
+    "title": "Computación",
+    "description": "Notebook",
+    "code": "A548",
+    "price": 990,
+    "status": true,
+    "stock": 0,
+    "category": "prueba",
+    "thumbnails": []
+  },
+  {
+    "id": 3,
+    "title": "Computación",
+    "description": "Monitor",
+    "code": "B548",
+    "price": 550,
+    "status": true,
+    "stock": 0,
+    "category": "prueba",
+    "thumbnails": []
+  }
+]
