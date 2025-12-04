@@ -3,9 +3,15 @@
 <ul>
     {{#each products}}
         <li>
-            <strong>{{title}}</strong> - ${{price}}
+            <h3>{{title}}</h3>
+            <p>{{description}}</p>
+            <p>Código: {{code}}</p>
+            <p>Precio: ${{price}}</p>
+            <p>Stock: {{stock}}</p>
+            <p>Categoría: {{category}}</p>
         </li>
     {{/each}}
 </ul>
+
 
 <a href="/realtimeproducts">Ir a productos en tiempo real</a>

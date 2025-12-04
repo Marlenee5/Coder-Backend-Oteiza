@@ -1,33 +1,37 @@
 const socket = io();
-const list = document.getElementById('productsList');
 
-// Cuando se envía la lista completa (al entrar a la página)
-socket.on('updateProducts', (products) => {
-    render(products);
+const form = document.getElementById("productForm");
+const list = document.getElementById("productsList");
+
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const data = {
+        title: form.title.value,
+        description: form.description.value,
+        code: form.code.value,
+        price: Number(form.price.value),
+        stock: Number(form.stock.value),
+        category: form.category.value,
+        thumbnails: form.thumbnails.value ? [form.thumbnails.value] : []
+    };
+
+    socket.emit("newProduct", data);
+
+    form.reset();
 });
 
-// Cuando se agrega un producto
-socket.on('productAdded', (product) => {
-    const li = document.createElement('li');
-    li.innerHTML = `<strong>${product.title}</strong> - $${product.price}`;
-    list.appendChild(li);
-});
+// Recibir lista actualizada desde el servidor
+socket.on("updateProducts", (products) => {
+    list.innerHTML = "";
 
-// Cuando se elimina
-socket.on('productDeleted', (product) => {
-    const items = list.querySelectorAll('li');
-    items.forEach(item => {
-        if (item.textContent.includes(product.title)) {
-            item.remove();
-        }
-    });
-});
-
-function render(products) {
-    list.innerHTML = '';
     products.forEach(p => {
-        const li = document.createElement('li');
-        li.innerHTML = `<strong>${p.title}</strong> - $${p.price}`;
-        list.appendChild(li);
+        list.innerHTML += `
+            <li>
+                <strong>${p.title}</strong> - $${p.price} <br>
+                ${p.description} <br>
+                Código: ${p.code} | Stock: ${p.stock} | Categoría: ${p.category}
+            </li>
+        `;
     });
-}
+});

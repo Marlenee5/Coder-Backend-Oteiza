@@ -1,9 +1,24 @@
-<h1>{{title}}</h1>
+<h2>Agregar Producto en Tiempo Real</h2>
+
+<form id="productForm">
+    <input type="text" name="title" placeholder="Título" required>
+    <input type="text" name="description" placeholder="Descripción" required>
+    <input type="text" name="code" placeholder="Código" required>
+    <input type="number" name="price" placeholder="Precio" required>
+    <input type="number" name="stock" placeholder="Stock" required>
+    <input type="text" name="category" placeholder="Categoría" required>
+    <input type="text" name="thumbnails" placeholder="URL imágenes (opcional)">
+    <button type="submit">Crear producto</button>
+</form>
+
+<hr>
 
 <ul id="productsList">
     {{#each products}}
-        <li data-id="{{id}}">
-            <strong>{{title}}</strong> - ${{price}}
+        <li>
+            <strong>{{title}}</strong> - ${{price}} <br>
+            {{description}} <br>
+            Código: {{code}} | Stock: {{stock}} | Categoría: {{category}}
         </li>
     {{/each}}
 </ul>

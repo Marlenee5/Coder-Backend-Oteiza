@@ -1,54 +1,57 @@
 import express from 'express';
-import productsRouter from './routes/products.router.js';
-import cartsRouter from './routes/carts.router.js';
-import viewsRouter from './routes/views.router.js';
-// import multer from 'multer';
 import path from 'path';
-import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
 import { engine } from 'express-handlebars';
 import { Server } from 'socket.io';
+import mongoose from 'mongoose';
+
+// Routers
+import productsRouter from './routes/products.router.js';
+import cartsRouter from './routes/carts.router.js';
+import viewsRouter from './routes/views.router.js';
+
+// Models
+import ProductModel from './models/products.model.js';
 
 const app = express();
 const PORT = 8080;
 
-// Para obtener __dirname en ES modules
+// __dirname en ES Modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Middleware
+// *** Middleware ***
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Archivos estáticos
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Handlebars
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
-// Archivos estáticos
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Multer configuración
-// const storageConfig = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, 'uploads');
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, Date.now() + path.extname(file.originalname));
-//   }
-// });
-
-// const upload = multer({ storage: storageConfig });
-
-// Routers API
+// Rutas API
 app.use('/api/products', productsRouter);
 app.use('/api/carts', cartsRouter);
 
-// Router de vistas
-app.use("/", viewsRouter);
+// Rutas de vistas
+app.use('/', viewsRouter);
 
-// Servidor HTTP + Socket.io
+// Conexión a MongoDB
+mongoose.connect("mongodb://localhost:27017/backend1")
+  .then(() => console.log("🚀 Conectado a MongoDB"))
+  .catch(err => console.log("Error al conectar Mongo:", err));
+
+// Middleware Global de Errores
+app.use((err, req, res, next) => {
+  console.error("ERROR GLOBAL:", err);
+  res.status(500).send('Error interno del servidor');
+});
+
+// Servidor HTTP + WebSocket 
 const httpServer = app.listen(PORT, () => {
   console.log(`Servidor escuchando en puerto ${PORT}`);
 });
@@ -56,28 +59,23 @@ const httpServer = app.listen(PORT, () => {
 const io = new Server(httpServer);
 app.set('io', io);
 
-// Socket.io server
+//  WebSocket Events 
 io.on("connection", async (socket) => {
   console.log("Cliente conectado por WebSocket");
 
-  try {
-    const productsPath = path.join(__dirname, 'products.json');
-    const data = await fs.readFile(productsPath, 'utf-8');
-    const products = JSON.parse(data);
+  // Enviar productos actuales
+  const products = await ProductModel.find().lean();
+  socket.emit("updateProducts", products);
 
-    // Enviar lista completa al cliente al conectar
-    socket.emit('updateProducts', products);
-  } catch (error) {
-    console.error("Error al leer products.json:", error);
-  }
+  // ESCUCHAR creación de nuevo producto desde el cliente
+  socket.on("newProduct", async (data) => {
+    const newProd = await ProductModel.create(data);
+
+    // Enviar lista actualizada a todos
+    const updated = await ProductModel.find().lean();
+    io.emit("updateProducts", updated);
+  });
 });
 
-// Exportar io para usarlo en products.router
+
 export { io };
-
-// Post para MULTER y subida de archivos
-// app.post('/upload', upload.single('file'), (req, res) => {
-//   res.send('Archivo se ha subido correctamente')
-// })
-
-//https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.8.1/socket.io.min.js//
