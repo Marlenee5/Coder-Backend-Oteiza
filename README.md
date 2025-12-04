@@ -1,7 +1,5 @@
 🛒 API Backend - Productos & Carritos
 
-Descripción
-
 Proyecto de Backend creado con Node.js + Express + MongoDB (Mongoose).
 Implementa una API REST para gestionar:
 
